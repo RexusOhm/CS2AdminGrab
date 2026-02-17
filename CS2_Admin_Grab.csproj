@@ -1,15 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+        <DebugSymbols>False</DebugSymbols>
+        <DebugType>None</DebugType>
+        <GenerateDependencyFile>false</GenerateDependencyFile>
+        <PublishDir>./CS2_Admin_Grab/</PublishDir>
+    </PropertyGroup>
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="CounterStrikeSharp.API" Version="1.0.362" />
-      <PackageReference Include="CS2TraceRay" Version="1.0.9" />
+        <PackageReference Include="CounterStrikeSharp.API" Version="1.0.362">
+            <PrivateAssets>none</PrivateAssets>
+            <ExcludeAssets>runtime</ExcludeAssets>
+            <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
     <ItemGroup>
@@ -22,6 +30,10 @@
 
     <ItemGroup>
       <None Remove="back\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="lang\**\*.*" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
 </Project>
