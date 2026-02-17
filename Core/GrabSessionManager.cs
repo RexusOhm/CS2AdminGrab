@@ -57,9 +57,9 @@ public class GrabSessionManager
                 originalSpeed = targetPawn.VelocityModifier;
                 originalGravity = targetPawn.GravityScale;
 
-                targetPawn.VelocityModifier = 0f;
+                targetPawn.VelocityModifier = 1f;//todo вернуть на 0 если не фан
                 targetPawn.GravityScale = 0f;
-                targetPawn.Teleport(targetPawn.AbsOrigin, targetPawn.EyeAngles, new Vector(0, 0, 0));
+                targetPawn.Teleport(null, null, new Vector(0, 0, 0));
             }
 
             _targetPlayerToAdmin[playerTarget.UserId] = adminUserId;

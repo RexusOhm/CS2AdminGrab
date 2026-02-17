@@ -28,6 +28,19 @@ public class BeamVisualizer : IGrabVisualizer
     public void CreateVisuals(GrabSession session, Vector beamStart)
     {
         session.GrabBeam = CreateBeamEntity(beamStart, beamStart, GrabBeamColor, GrabBeamWidth);
+        SetTargetGlow(session);//todo добавить удаление подсветки или переделать под создание/уадание пропа
+    }
+
+    private static void SetTargetGlow(GrabSession session, bool isActive = true)
+    {
+        var ent = session.Target.ResolveEntity()?.As<CDynamicProp>();
+        if (ent == null) return;
+        ent.Glow.GlowColorOverride = Color.Lime;
+        ent.Glow.GlowRange = 15000;
+        ent.Glow.GlowTeam = -1;
+        ent.Glow.GlowType = 3;
+        ent.Glow.GlowRangeMin = 40;
+        Utilities.SetStateChanged(ent, "CBaseModelEntity", "m_Glow");
     }
 
     public void UpdateVisuals(GrabSession session, Vector beamStart, Vector? beamEnd, CBaseEntity? targetEntity)

@@ -274,12 +274,12 @@ public class GrabManager
                 return;
             }
 
-            if (result.Target is GrabTarget.Player playerTarget && !playerTarget.IsValid)
+            if (result.Target is GrabTarget.Player { IsValid: false })
                 return;
 
-            int adminId = admin.UserId!.Value;
-            float distance = Math.Clamp(result.Distance, _config.MinDistance, _config.MaxDistance);
-            var session = _sessions.CreateSession(adminId, result.Target, distance, admin.PlayerPawn.Value);
+            var adminId = admin.UserId!.Value;
+            var distance = Math.Clamp(result.Distance, _config.MinDistance, _config.MaxDistance);
+            _sessions.CreateSession(adminId, result.Target, distance, admin.PlayerPawn.Value);
 
             admin.PrintToCenter($"Захвачен: {result.Target.GetLabel()}");
         }

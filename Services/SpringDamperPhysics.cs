@@ -21,17 +21,25 @@ public class SpringDamperPhysics : IGrabPhysics
 
     public void ApplyToPlayer(CCSPlayerPawn pawn, Vector currentPos, Vector targetPos)
     {
-        Vector currentCenter = currentPos + new Vector(0, 0, 36f);
-        Vector targetCenter = targetPos + new Vector(0, 0, 36f);
-        Vector delta = targetCenter - currentCenter;
-        Vector newVel = (delta * _config.Gain) + (pawn.AbsVelocity * _config.Damping);
-        pawn.Teleport(pawn.AbsOrigin, pawn.EyeAngles, VectorMath.ClampLength(newVel, _config.MaxVelocity));
+        var currentCenter = currentPos + new Vector(0, 0, 36f);
+        var targetCenter = targetPos + new Vector(0, 0, 36f);
+        var delta = targetCenter - currentCenter;
+        var newVel = (delta * _config.Gain) + (pawn.AbsVelocity * _config.Damping);
+        //pawn.Teleport(null, null, VectorMath.ClampLength(newVel, _config.MaxVelocity));
+        var vec = VectorMath.ClampLength(newVel, _config.MaxVelocity);
+        pawn.AbsVelocity.X += vec.X;
+        pawn.AbsVelocity.Y += vec.Y;
+        pawn.AbsVelocity.Z += vec.Z;
     }
 
     public void ApplyToEntity(CBaseEntity entity, Vector currentPos, Vector targetPos)
     {
-        Vector delta = targetPos - currentPos;
-        Vector newVel = (delta * _config.Gain) + (entity.AbsVelocity * _config.Damping);
-        entity.Teleport(entity.AbsOrigin, entity.AbsRotation, VectorMath.ClampLength(newVel, _config.MaxVelocity));
+        var delta = targetPos - currentPos;
+        var newVel = (delta * _config.Gain) + (entity.AbsVelocity * _config.Damping);
+        //entity.Teleport(null, null, VectorMath.ClampLength(newVel, _config.MaxVelocity));
+        var vec = VectorMath.ClampLength(newVel, _config.MaxVelocity);
+        entity.AbsVelocity.X += vec.X;
+        entity.AbsVelocity.Y += vec.Y;
+        entity.AbsVelocity.Z += vec.Z;
     }
 }
