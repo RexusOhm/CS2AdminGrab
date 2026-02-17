@@ -28,7 +28,7 @@ public class BeamVisualizer : IGrabVisualizer
     public void CreateVisuals(GrabSession session, Vector beamStart)
     {
         session.GrabBeam = CreateBeamEntity(beamStart, beamStart, GrabBeamColor, GrabBeamWidth);
-        SetTargetGlow(session);//todo добавить удаление подсветки или переделать под создание/уадание пропа
+        //SetTargetGlow(session);//todo заменить на создание и удаление пропов!
     }
 
     private static void SetTargetGlow(GrabSession session, bool isActive = true)

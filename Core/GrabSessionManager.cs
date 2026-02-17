@@ -57,7 +57,7 @@ public class GrabSessionManager
                 originalSpeed = targetPawn.VelocityModifier;
                 originalGravity = targetPawn.GravityScale;
 
-                targetPawn.VelocityModifier = 1f;//todo вернуть на 0 если не фан
+                targetPawn.VelocityModifier = 0.1f;//todo вернуть на 0 если не фан
                 targetPawn.GravityScale = 0f;
                 targetPawn.Teleport(null, null, new Vector(0, 0, 0));
             }
