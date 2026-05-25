@@ -1,5 +1,6 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Menu;
 using CS2_Admin_Grab.Config;
 using CS2_Admin_Grab.Models;
 using CS2_Admin_Grab.Services;
@@ -85,9 +86,12 @@ public class GrabSessionManager
     public void ReleaseSession(int adminUserId)
     {
         if (!_sessions.Remove(adminUserId, out var session)) return;
-
+        
         RestoreTargetState(session);
         _visualizer.DestroyVisuals(session);
+        
+        var admin = Utilities.GetPlayerFromUserid(adminUserId);
+        if (admin != null) MenuManager.CloseActiveMenu(admin);
     }
 
     public void ReleaseAll()

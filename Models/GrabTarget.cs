@@ -34,7 +34,7 @@ public abstract class GrabTarget
                 return controller != null
                     && controller.IsValid
                     && controller.PawnIsAlive
-                    && controller.Connected == PlayerConnectedState.PlayerConnected
+                    && controller.Connected == PlayerConnectedState.Connected
                     && controller.PlayerPawn.Value != null;
             }
         }

@@ -41,7 +41,7 @@ public class OBBRayTraceService : IRayTraceService
         {
             foreach (var player in Utilities.GetPlayers())
             {
-                if (!player.IsValid || player.Connected != PlayerConnectedState.PlayerConnected ||
+                if (!player.IsValid || player.Connected != PlayerConnectedState.Connected ||
                     !player.PawnIsAlive || player.UserId == admin.UserId)
                     continue;
 
@@ -66,6 +66,9 @@ public class OBBRayTraceService : IRayTraceService
 
                 var baseEnt = ent.As<CBaseEntity>();
                 if (baseEnt == null) continue;
+                
+                if (!ent.DesignerName.EndsWith("_projectile") && baseEnt.OwnerEntity.IsValid)
+                    continue;
 
                 if (CheckIntersectionOBBWithPredict(rayOrigin, forward, baseEnt, out float dist) && dist < closestDist)
                 {
@@ -124,19 +127,21 @@ public class OBBRayTraceService : IRayTraceService
         Vector rayOrigin, Vector rayDir, Vector entOrigin, QAngle entRotation,
         Vector mins, Vector maxs, out float distance)
     {
-        GetOBBBasisVectors(entRotation, out Vector fwd, out Vector right, out Vector up);
+        // Используем ТЕ ЖЕ базисные векторы, что и в визуализации (forward, left, up)
+        VectorMath.GetAngleVectors(entRotation, out Vector fwd, out Vector left, out Vector up);
 
         Vector delta = rayOrigin - entOrigin;
 
+        // Проекция в локальную систему объекта: оси X=fwd, Y=left, Z=up
         Vector rOriginLocal = new Vector(
             VectorMath.Dot(delta, fwd),
-            VectorMath.Dot(delta, right),
+            VectorMath.Dot(delta, left),
             VectorMath.Dot(delta, up)
         );
 
         Vector rDirLocal = new Vector(
             VectorMath.Dot(rayDir, fwd),
-            VectorMath.Dot(rayDir, right),
+            VectorMath.Dot(rayDir, left),
             VectorMath.Dot(rayDir, up)
         );
 
@@ -149,7 +154,7 @@ public class OBBRayTraceService : IRayTraceService
     /// Right (а не Left), что соответствует правой системе координат для AABB-теста.
     /// Эта формулировка напрямую воспроизводит математику оригинальной реализации.
     /// </summary>
-    private static void GetOBBBasisVectors(QAngle angles, out Vector forward, out Vector right, out Vector up)
+    /*private static void GetOBBBasisVectors(QAngle angles, out Vector forward, out Vector right, out Vector up)
     {
         const float Deg2Rad = MathF.PI / 180f;
 
@@ -178,7 +183,7 @@ public class OBBRayTraceService : IRayTraceService
             cr * sp * sy + sr * cy,
             cr * cp
         );
-    }
+    }*/
 
     private static bool IntersectAABB(Vector start, Vector dir, Vector min, Vector max, out float distance)
     {

@@ -1,5 +1,4 @@
 using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Modules.Utils;
 using CS2_Admin_Grab.Models;
 using Vector = CounterStrikeSharp.API.Modules.Utils.Vector;
 
@@ -14,5 +13,5 @@ public interface IGrabVisualizer
     void CreateVisuals(GrabSession session, Vector beamStart);
     void UpdateVisuals(GrabSession session, Vector beamStart, Vector? beamEnd, CBaseEntity? targetEntity);
     void DestroyVisuals(GrabSession session);
-    void UpdateHud(CCSPlayerController admin, string label, float distance);
+    void UpdateHud(CCSPlayerController admin, string entityClass, string targetName, float currentDist, float targetDist, AdminGrabPlugin plugin);
 }

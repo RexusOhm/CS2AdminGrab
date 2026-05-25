@@ -22,11 +22,16 @@ public class GrabSession
     // Визуальные ресурсы (управляются IGrabVisualizer)
     public CEnvBeam? GrabBeam { get; set; }
     public List<CEnvBeam>? BoxBeams { get; set; }
+    
+    // --- Новые свойства для механики ударов и бросков ---
+    public float LastHitTime { get; set; } = 0f; // Время последнего удара (кнопка E)
+    public float TargetDistanceSetting { get; set; } // Расстояние уставки (заданное админом)
 
     public GrabSession(int adminUserId, GrabTarget target, float distance)
     {
         AdminUserId = adminUserId;
         Target = target;
         Distance = distance;
+        TargetDistanceSetting = distance;
     }
 }

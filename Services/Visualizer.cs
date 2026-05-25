@@ -1,6 +1,7 @@
 using System.Drawing;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Utils;
 using CS2_Admin_Grab.Models;
 using CS2_Admin_Grab.Utils;
@@ -12,7 +13,7 @@ namespace CS2_Admin_Grab.Services;
 /// Визуализация захвата через env_beam сущности.
 /// Управляет жизненным циклом beam-лучей, wireframe box и HUD.
 /// </summary>
-public class BeamVisualizer : IGrabVisualizer
+public class Visualizer : IGrabVisualizer
 {
     private static readonly QAngle AngleZero = new(0, 0, 0);
     private static readonly Vector VecZero = new(0, 0, 0);
@@ -28,19 +29,6 @@ public class BeamVisualizer : IGrabVisualizer
     public void CreateVisuals(GrabSession session, Vector beamStart)
     {
         session.GrabBeam = CreateBeamEntity(beamStart, beamStart, GrabBeamColor, GrabBeamWidth);
-        //SetTargetGlow(session);//todo заменить на создание и удаление пропов!
-    }
-
-    private static void SetTargetGlow(GrabSession session, bool isActive = true)
-    {
-        var ent = session.Target.ResolveEntity()?.As<CDynamicProp>();
-        if (ent == null) return;
-        ent.Glow.GlowColorOverride = Color.Lime;
-        ent.Glow.GlowRange = 15000;
-        ent.Glow.GlowTeam = -1;
-        ent.Glow.GlowType = 3;
-        ent.Glow.GlowRangeMin = 40;
-        Utilities.SetStateChanged(ent, "CBaseModelEntity", "m_Glow");
     }
 
     public void UpdateVisuals(GrabSession session, Vector beamStart, Vector? beamEnd, CBaseEntity? targetEntity)
@@ -64,8 +52,22 @@ public class BeamVisualizer : IGrabVisualizer
         }
     }
 
-    public void UpdateHud(CCSPlayerController admin, string label, float distance) =>
-        admin.PrintToCenter($"Цель: {label}\nДист: {MathF.Round(distance)}");
+    public void UpdateHud(CCSPlayerController admin, string entityClass, string targetName, float currentDist, float targetDist, AdminGrabPlugin plugin)
+    {
+        string targetNameString = string.IsNullOrEmpty(targetName) ? "" : $" ({targetName})";
+        
+        string combinedHud = 
+            $"<font color='gold'> Цель: {entityClass}{targetNameString}</font><br/>" +
+            $"<font color='white'> Дистанция: {currentDist:F1}in / Уставка: {targetDist:F1}in</font><br/>" +
+            "<font color='lime'> Нажмите [G], чтобы БРОСИТЬ цель</font><br/>" +
+            "<font color='red'> Нажмите [E], чтобы УДАРИТЬ цель (-5 HP)</font>";
+        
+        //admin.PrintToCenterHtml(combinedHud);
+        MenuManager.CloseActiveMenu(admin);
+        CenterHtmlMenu menu = new CenterHtmlMenu("", plugin);
+        menu.Title = combinedHud;
+        MenuManager.OpenCenterHtmlMenu(plugin, admin, menu);
+    }
 
     #region Beam Management
 

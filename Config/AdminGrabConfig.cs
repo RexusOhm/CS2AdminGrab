@@ -35,7 +35,7 @@ public class AdminGrabConfig : BasePluginConfig
     public float Damping { get; set; } = 0.60f;
 
     [JsonPropertyName("Max Velocity")]
-    public float MaxVelocity { get; set; } = 1500f;
+    public float MaxVelocity { get; set; } = 3500f;
 
     [JsonPropertyName("Stuck Threshold")]
     public float StuckThreshold { get; set; } = 0.5f;
@@ -53,4 +53,12 @@ public class AdminGrabConfig : BasePluginConfig
 
     [JsonPropertyName("Button Step")]
     public float ButtonStep { get; set; } = 10f;
+    
+    // --- Дроп ---
+    
+    [JsonPropertyName("Throw Force")]
+    public float ThrowForce { get; set; } = 1500f;
+
+    [JsonPropertyName("Throw Force Vertical")]
+    public float ThrowForceVertical { get; set; } = 150f;
 }
