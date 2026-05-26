@@ -58,8 +58,6 @@ public class GrabManager
     /// </summary>
     private void ThrowTarget(CCSPlayerController admin)
     {
-        Server.PrintToChatAll("DROP_ThrowTarget");
-        
         int adminId = admin.UserId ?? -1;
         var session = _sessions.GetSession(adminId);
         if (session == null || admin.PlayerPawn.Value == null) return;
@@ -94,7 +92,7 @@ public class GrabManager
         }
 
         _sessions.ReleaseSession(adminId);
-        admin.PrintToCenter("Цель брошена!");
+        admin.PrintToCenterAlert("Цель брошена!");
     }
     
     #endregion
@@ -168,16 +166,13 @@ public class GrabManager
 
     public HookResult OnPlayerDeath(EventPlayerDeath @event, GameEventInfo info)
     {
-        if (@event.Userid == null) return HookResult.Continue;
-
-        try
-        {
-            _sessions.ReleaseByTargetPlayer(@event.Userid.UserId!.Value);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error in OnPlayerDeath");
-        }
+        if (@event.Userid == null || @event.Userid.UserId == null) return HookResult.Continue;
+        var victimId = @event.Userid.UserId.Value;
+        
+        _sessions.ReleaseByTargetPlayer(victimId);      // если жертва была захвачена
+        
+        if (_sessions.HasSession(victimId))             // если жертва сама удерживала кого-то
+            _sessions.ReleaseSession(victimId);
 
         return HookResult.Continue;
     }
@@ -205,8 +200,6 @@ public class GrabManager
     
     public HookResult OnDropWeapon(DynamicHook hook)
     {
-        Server.PrintToChatAll("DROP_onDrop");
-
         var controller = hook.GetParam<CCSPlayerController>(0);  // теперь это контроллер
         if (controller == null || !controller.IsValid || controller.UserId == null)
             return HookResult.Continue;
@@ -338,29 +331,25 @@ public class GrabManager
         if (session.Target is GrabTarget.Player playerTarget)
         {
             var targetController = playerTarget.ResolveController();
-            if (targetController != null && targetController.IsValid && targetController.PlayerPawn.Value != null)
+            if (targetController?.PlayerPawn.Value is { IsValid: true } targetPawn)
             {
-                var targetPawn = targetController.PlayerPawn.Value;
-                int currentHp = targetPawn.Health;
-                int newHp = Math.Max(0, currentHp - 5);
-                int dmg = 5;
-                
-                HitPlayer(admin,targetController, dmg);
-                // Сообщения игрокам
-                targetController.PrintToCenter($"Вас ударил админ!");
-                admin.PrintToCenter($"Вы ударили игрока {targetController.PlayerName}. Осталось HP: {newHp}");
-                
-                // Если здоровье опустилось до 0, убиваем игрока
+                const int damage = 5;
+                HitPlayer(admin, targetController, damage);   // наносим урон через нативную функцию
+
+                var newHp = targetPawn.Health;                // актуальное здоровье после удара
+                targetController.PrintToCenterAlert("Вас ударил админ!");
+                admin.PrintToCenterAlert($"Вы ударили игрока {targetController.PlayerName}. Осталось HP: {newHp}");
+
+                // Если цель мертва — немедленно освобождаем сессию
                 if (newHp <= 0)
                 {
-                    targetPawn.CommitSuicide(false, true);
                     _sessions.ReleaseSession(admin.UserId ?? -1);
                 }
             }
         }
         else
         {
-            admin.PrintToCenter("Эту цель нельзя ударить (не является игроком)");
+            admin.PrintToCenterAlert("Эту цель нельзя ударить (не является игроком)");
         }
     }
     private static int PtrSize => Schema.GetClassSize("CTakeDamageInfo");
@@ -382,8 +371,8 @@ public class GrabManager
 
         Marshal.StructureToPtr(attackerInfo, new IntPtr(ptr.ToInt64() + 0x88), false);
 
-        if (attacker.Team == victim.Team)
-            attacker = victim;
+        /*if (attacker.Team == victim.Team)
+            attacker = victim;*/
 
         Schema.SetSchemaValue(damageInfo.Handle, "CTakeDamageInfo", "m_hInflictor", attacker.PawnIsAlive ? attacker.Pawn.Raw : attacker.PlayerPawn.Raw);
         Schema.SetSchemaValue(damageInfo.Handle, "CTakeDamageInfo", "m_hAttacker", attacker.Pawn.Raw);

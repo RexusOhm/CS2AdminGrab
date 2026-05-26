@@ -57,10 +57,12 @@ public class Visualizer : IGrabVisualizer
         string targetNameString = string.IsNullOrEmpty(targetName) ? "" : $" ({targetName})";
         
         string combinedHud = 
-            $"<font color='gold'> Цель: {entityClass}{targetNameString}</font><br/>" +
-            $"<font color='white'> Дистанция: {currentDist:F1}in / Уставка: {targetDist:F1}in</font><br/>" +
-            "<font color='lime'> Нажмите [G], чтобы БРОСИТЬ цель</font><br/>" +
-            "<font color='red'> Нажмите [E], чтобы УДАРИТЬ цель (-5 HP)</font>";
+            $"<font color='gold'>Цель: {entityClass}{targetNameString}</font><br/>" +
+            $"<font color='white'>дист.: {currentDist:F1} / уст.: {targetDist:F1} in</font><br/>" +
+            "<font color='turquoise'>[ЛКМ] отдалить</font><br/>" +
+            "<font color='turquoise'>[ПКМ] приблизить</font><br/>" +
+            "<font color='lime'>[G] бросить цель</font><br/>" +
+            "<font color='red'>[E] ударить цель (-5 HP)</font>";
         
         //admin.PrintToCenterHtml(combinedHud);
         MenuManager.CloseActiveMenu(admin);

@@ -91,7 +91,7 @@ public class GrabSessionManager
         _visualizer.DestroyVisuals(session);
         
         var admin = Utilities.GetPlayerFromUserid(adminUserId);
-        if (admin != null) MenuManager.CloseActiveMenu(admin);
+        if (admin != null && admin.IsValid) MenuManager.CloseActiveMenu(admin);
     }
 
     public void ReleaseAll()
@@ -100,6 +100,9 @@ public class GrabSessionManager
         {
             RestoreTargetState(kvp.Value);
             _visualizer.DestroyVisuals(kvp.Value);
+            
+            var admin = Utilities.GetPlayerFromUserid(kvp.Key);
+            if (admin != null && admin.IsValid) MenuManager.CloseActiveMenu(admin);
         }
         _sessions.Clear();
         _targetPlayerToAdmin.Clear();
@@ -125,7 +128,7 @@ public class GrabSessionManager
         if (session.Target is GrabTarget.Player playerTarget)
         {
             var controller = playerTarget.ResolveController();
-            if (controller?.PlayerPawn.Value is { } pawn)
+            if (controller?.PlayerPawn.Value is { IsValid: true } pawn)
             {
                 pawn.VelocityModifier = session.OriginalSpeed;
                 pawn.GravityScale = session.OriginalGravity;

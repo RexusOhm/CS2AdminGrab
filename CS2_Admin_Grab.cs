@@ -15,7 +15,7 @@ namespace CS2_Admin_Grab;
 public class AdminGrabPlugin : BasePlugin, IPluginConfig<AdminGrabConfig>
 {
     public override string ModuleName => "Admin Grab";
-    public override string ModuleVersion => "0.1.7";
+    public override string ModuleVersion => "0.1.8";
     public override string ModuleAuthor => "Rexus Ohm";
 
     public AdminGrabConfig Config { get; set; } = null!;
